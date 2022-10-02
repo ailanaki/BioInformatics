@@ -6,7 +6,7 @@
 #include "../suffArray.h"
 #include <fstream>
 
-int suffix_array() {
+void suffix_array() {
     std::ifstream input;
     input.open("SuffixArray/inputs/input_1.txt");
     std::string str;
