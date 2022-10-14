@@ -91,10 +91,10 @@ void twoBreakOnGenomeGraph(std::vector<std::pair<int, int>> &genomeGraph, int i1
 }
 
 
-int findNextEdge(int current, std::vector<std::pair<int, int>> &edges) {
+int findNextEdge(int second, std::vector<std::pair<int, int>> &edges) {
     if (edges.empty()) return -1;
     auto ind = 0;
-    auto val = edges[current].second;
+    auto val = second;
     if (val % 2 == 0) val -= 1;
     else val += 1;
 
@@ -121,20 +121,21 @@ void graphToGenome(std::vector<std::pair<int, int>> &genomeGraph,
         while (current != -1) {
             cycle.push_back(genomeGraph[current].first);
             cycle.push_back(genomeGraph[current].second);
+            auto second = genomeGraph[current].second;
             genomeGraph.erase(genomeGraph.begin() + current);
-            int next_edge = findNextEdge(current, genomeGraph);
+            int next_edge = findNextEdge(second, genomeGraph);
             current = next_edge;
         }
         cycles.push_back(cycle);
     }
     for (auto cycle: cycles) {
-//        std::vector<int> tmp;
-//        tmp.push_back(cycle[cycle.size() - 1]);
-//        for (int i = 0; i < cycle.size() - 1; ++i) {
-//            tmp.push_back(cycle[i]);
-//        }
+        std::vector<int> tmp;
+        tmp.push_back(cycle[cycle.size() - 1]);
+        for (int i = 0; i < cycle.size() - 1; ++i) {
+            tmp.push_back(cycle[i]);
+        }
         std::vector<int> chromosome;
-        cycleToChromosome(chromosome, cycle);
+        cycleToChromosome(chromosome, tmp);
         q.push_back(chromosome);
     }
 }
@@ -197,18 +198,22 @@ void shortestRearangment(std::vector<std::vector<int>> &p, std::vector<std::vect
         int i1 = cycle[ind].first, i2 = cycle[ind].second;
         int i3, i4;
         auto it = red.begin();
+        //TODO:  вынести в функцию
         for (int i = 0; i < red.size(); ++i) {
-            if (it->first == cycle[ind].first && it->second == cycle[ind].second){
+            if (it->first == cycle[ind].first && it->second == cycle[ind].second ||
+                    it->first == cycle[ind].second && it->second == cycle[ind].first){
+                red.erase(it);
                 break;
             }
             it++;
         }
-        red.erase(it);
         if (ind + 2 != cycle.size()) {
             i3 = cycle[ind + 2].first, i4 = cycle[ind + 2].second;
             it = red.begin();
             for (int i = 0; i < red.size(); ++i) {
-                if (it->first == cycle[ind + 2].first && it->second == cycle[ind + 2].second){
+                if (it->first == cycle[ind + 2].first && it->second == cycle[ind + 2].second ||
+                        it->first == cycle[ind + 2].second && it->second == cycle[ind + 2].first){
+                    red.erase(it);
                     break;
                 }
                 it++;
@@ -237,7 +242,7 @@ void shortestRearangment(std::vector<std::vector<int>> &p, std::vector<std::vect
 
 }
 
-
+//TODO: изменить
 void read_genome(std::string &line, std::vector<std::vector<int>> &genome) {
     std::vector<int> chromosome;
     std::string elem;
@@ -271,11 +276,19 @@ void twoBreakSorting() {
     read_genome(second, q);
     std::vector<std::vector<std::vector<int>>> result;
     shortestRearangment(p, q, result);
-    for (auto line: result) {
-        for (auto l: line) {
-            for (auto i: l) {
-                std::cout << i << " ";
+    for (auto & line: result) {
+        for (auto & l: line) {
+            std::cout << "(";
+            for (int i = 0; i < l.size(); ++i) {
+                if (i!= 0){
+                    std::cout <<" ";
+                }
+                if (l[i] > 0){
+                    std::cout << "+";
+                }
+                std::cout << l[i];
             }
+            std::cout <<")";
         }
         std::cout << "\n";
     }
