@@ -7,6 +7,7 @@
 #include "AlignTwoStringsUsingAffineGapPenalty/align.h"
 #include "ViterbiAlgorithm/viterbi.h"
 #include "Baum-Welch/baum-welch.h"
+#include "TwoBreakSortingProblem/twoBreakSortingProblem.h"
 
 int main(){
     //multiple_approximate_pattern_matching();
@@ -17,5 +18,6 @@ int main(){
     //suffix_array();
     //align();
     //vitebi();
-    baumWelch();
+    //baumWelch();
+    twoBreakSorting();
 }
