@@ -8,6 +8,7 @@
 #include "ViterbiAlgorithm/viterbi.h"
 #include "Baum-Welch/baum-welch.h"
 #include "TwoBreakSortingProblem/twoBreakSortingProblem.h"
+#include "AdditivePhylogeny/additive_phylogeny.h"
 
 int main(){
     //multiple_approximate_pattern_matching();
@@ -19,5 +20,6 @@ int main(){
     //align();
     //vitebi();
     //baumWelch();
-    twoBreakSorting();
+    //twoBreakSorting();
+    additive_phylogeny();
 }

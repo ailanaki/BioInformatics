@@ -5,8 +5,7 @@
 #include <fstream>
 #include <iostream>
 
-//using coodrs = std::pair<int, int>;
-//using matrixCoords = std::vector<std::vector<coodrs>>;
+
 using matrix = std::vector<std::vector<int>>;
 using string = std::string;
 

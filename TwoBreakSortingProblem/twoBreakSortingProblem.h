@@ -97,7 +97,6 @@ int findNextEdge(int second, std::vector<std::pair<int, int>> &edges) {
     auto val = second;
     if (val % 2 == 0) val -= 1;
     else val += 1;
-
     while (val != edges[ind].second && val != edges[ind].first) {
         ind += 1;
         if (ind == edges.size()) return -1;
@@ -158,17 +157,27 @@ bool find(std::pair<int, int> pair, std::vector<std::pair<int, int>> &array) {
     }
     return false;
 }
+void deleteFromArray(std::pair<int, int> pair, std::vector<std::pair<int, int>> &array){
+    auto it = array.begin();
+    for (int i = 0; i < array.size(); ++i) {
+        if (it->first == pair.first && it->second == pair.second ||
+            it->first == pair.second && it->second == pair.first){
+            array.erase(it);
+            break;
+        }
+        it++;
+    }
+}
 
-
-void shortestRearangment(std::vector<std::vector<int>> &p, std::vector<std::vector<int>> &q,
+void shortestRearrangment(std::vector<std::vector<int>> &p, std::vector<std::vector<int>> &q,
                          std::vector<std::vector<std::vector<int>>> &result) {
     result.push_back(p);
     std::vector<std::pair<int, int>> red;
-    std::vector<std::pair<int, int>> blue;
+    std::vector<std::pair<int, int>> black;
     std::vector<std::pair<int, int>> graph;
     coloredEdges(p, red);
-    coloredEdges(q, blue);
-    for (auto &i: blue) {
+    coloredEdges(q, black);
+    for (auto &i: black) {
         graph.push_back(i);
     }
     for (auto &i: red) {
@@ -197,36 +206,18 @@ void shortestRearangment(std::vector<std::vector<int>> &p, std::vector<std::vect
         }
         int i1 = cycle[ind].first, i2 = cycle[ind].second;
         int i3, i4;
-        auto it = red.begin();
-        //TODO:  вынести в функцию
-        for (int i = 0; i < red.size(); ++i) {
-            if (it->first == cycle[ind].first && it->second == cycle[ind].second ||
-                    it->first == cycle[ind].second && it->second == cycle[ind].first){
-                red.erase(it);
-                break;
-            }
-            it++;
-        }
+        deleteFromArray(cycle[ind], red);
         if (ind + 2 != cycle.size()) {
             i3 = cycle[ind + 2].first, i4 = cycle[ind + 2].second;
-            it = red.begin();
-            for (int i = 0; i < red.size(); ++i) {
-                if (it->first == cycle[ind + 2].first && it->second == cycle[ind + 2].second ||
-                        it->first == cycle[ind + 2].second && it->second == cycle[ind + 2].first){
-                    red.erase(it);
-                    break;
-                }
-                it++;
-            }
+            deleteFromArray(cycle[ind + 2], red);
         } else {
             i3 = cycle[0].first, i4 = cycle[0].second;
             red.erase(red.begin());
         }
-
         red.emplace_back(i1, i4);
         red.emplace_back(i2, i3);
         graph.clear();
-        for (auto &i: blue) {
+        for (auto &i: black) {
             graph.push_back(i);
         }
         for (auto &i: red) {
@@ -242,40 +233,35 @@ void shortestRearangment(std::vector<std::vector<int>> &p, std::vector<std::vect
 
 }
 
-//TODO: изменить
-void read_genome(std::string &line, std::vector<std::vector<int>> &genome) {
+void read_genome(std::vector<std::vector<int>> &genome, std::ifstream & input) {
     std::vector<int> chromosome;
     std::string elem;
-    for (auto ch: line) {
-        if (ch == '(') {
+    std::string ch;
+    input >> ch;
+    chromosome.push_back(std::atoi(ch.substr(1,ch.size() - 1).c_str()));
+    while(true) {
+        input >> ch;
+        if (ch == "(" || ch == "," || ch == ")") {
             continue;
-
-        } else if (ch != ' ' && ch != ')' && ch != ',') {
-            elem += ch;
-        } else if (ch == ')') {
-            chromosome.push_back(std::atoi(elem.c_str()));
-            genome.push_back(chromosome);
-            chromosome.clear();
-            elem = "";
-
         } else {
-            chromosome.push_back(std::atoi(elem.c_str()));
-            elem = "";
+            if (ch.substr(ch.size() - 1, ch.size()) == ")"){
+                chromosome.push_back(std::atoi(ch.substr(0, ch.size() - 1).c_str()));
+                break;
+            }
+            chromosome.push_back(std::atoi(ch.c_str()));
         }
     }
+    genome.push_back(chromosome);
 }
 
 
 void twoBreakSorting() {
-    std::ifstream input("TwoBreakSortingProblem/inputs/input_1.txt");
-    std::string first, second;
     std::vector<std::vector<int>> p, q;
-    std::getline(input, first);
-    std::getline(input, second);
-    read_genome(first, p);
-    read_genome(second, q);
+    std::ifstream input("TwoBreakSortingProblem/inputs/input_1.txt");
+    read_genome( p, input);
+    read_genome(q, input);
     std::vector<std::vector<std::vector<int>>> result;
-    shortestRearangment(p, q, result);
+    shortestRearrangment(p, q, result);
     for (auto & line: result) {
         for (auto & l: line) {
             std::cout << "(";
